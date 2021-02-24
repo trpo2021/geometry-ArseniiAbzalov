@@ -1,183 +1,260 @@
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-struct obj {
-    double x;
-    double y;
-    double radius;
-} circle;
+char* parsing_digit1(char* cursor, double* x);
+char* parsing_digit2(char* cursor, double* y);
+char* parsing_digit3(char* cursor, double* radius);
+char* parsing_comma(char* cursor);
+bool search_brecket(char* cursor);  //поиск '('
+bool search_comma(char* cursor);    //поиск ','
+bool search_brecket2(char* cursor); //поиск ')'
+bool check_eof(char* cursor); //проверка до конца строки
 
 int main()
 {
     char str[30];
-    char* cursor = str;    //первый курсор
-    char* endcursor = str; //второй курсор
-    int check = 0, check2 = 0,
-        check3 = 0; //переменные для поиска символов '(',',',')'
+    char* cursor = str;
+    char* cursor2 = str;
+    double data[3];
+    double x, y, radius;
 
-    fgets(str, sizeof(str), stdin); //ввод строки
+    fgets(str, sizeof(str), stdin);
 
-    while (*cursor == ' ') { //пропускаем пробелы перед словом
+    while (*cursor == ' ') {
         cursor++;
-        endcursor++;
+        cursor2++;
     }
-    if (isalpha(*cursor) != 0) { //ставим второй курсор на конец слова
-        while (isalpha(*endcursor) != 0) {
-            endcursor++;
+    if (isalpha(*cursor) != 0) {
+        while (isalpha(*cursor2) != 0) {
+            cursor2++;
         }
     }
 
-    if (strncasecmp(cursor, "circle", endcursor - cursor) == 0) { //делаем проверку слова на совпадение
-        char* newcursor = endcursor;
-        char* end;
-
-        while (*newcursor != 10) //проверка на наличие '('
-        {
-            if (*newcursor == '(') {
-                check = 1;
-                newcursor = endcursor;
-                break;
-            }
-            newcursor++;
-        }
-        if (check == 0) {
-            printf("expected '('\n");
-            return 0;
-        }
-
-        while (isdigit(*newcursor) == 0) { //проверка после скобки до первого числа
-
-            if ((*newcursor == ' ') || (*newcursor == '(')) {
-                newcursor++;
-            } else {
-                printf("expected '<double>'\n");
-                return 0;
-            }
-        }
-
-        if (isdigit(*newcursor) != 0) { //запись первого числа в структуру
-            circle.x = strtod(newcursor, &end);
-            newcursor = end;
-            printf("%f\n", circle.x);
-        }
-
-        while (isdigit(*newcursor) == 0) { //проверка перед вторым
-
-            if (*newcursor == ' ') {
-                newcursor++;
-            } else {
-                printf("expected '<double>'\n");
-                return 0;
-            }
-        }
-
-        if (isdigit(*newcursor) != 0) { //запись второго числа в структуру
-            circle.y = strtod(newcursor, &end);
-            newcursor = end;
-            printf("%f\n", circle.y);
-        }
-
-        char* helpcursor = newcursor; //вспомогательный курсор
-
-        while (*newcursor != 10) //проверка на наличие запятой
-        {
-            if (*newcursor == ',') {
-                check2 = 1;
-                newcursor = helpcursor;
-                break;
-            }
-            newcursor++;
-        }
-        if (check2 == 0) {
-            printf("expected ','\n");
-            return 0;
-        }
-
-        while (*newcursor != ',') { //проверка перед запятой
-
-            if (*newcursor == ' ') {
-                newcursor++;
-            } else {
-                printf("expected '<double>'\n");
-                return 0;
-            }
-        }
-
-        if (*newcursor == ',') //проверка если сразу стоим на запятой
-        {
-            newcursor++;
-        }
-
-        if (*newcursor != ' ') { //проверка пробела после запятой
-            printf("expected ' ' after ','\n");
-            return 0;
-        } else {
-            newcursor++;
-        }
-
-        while (isdigit(*newcursor) == 0) { //проверка перед третьим числом
-
-            if (*newcursor == ' ') {
-                newcursor++;
-            } else {
-                printf("expected '<double>'\n");
-                return 0;
-            }
-        }
-
-        if (isdigit(*newcursor) != 0) { //запись третьего числа в структуру
-            circle.radius = strtod(newcursor, &end);
-            newcursor = end;
-            printf("%f\n", circle.radius);
-        }
-
-        char* helpcursor2;
-        helpcursor2 = newcursor;
-
-        while (*newcursor != 10) //проверка на наличие ')'
-        {
-            if (*newcursor == ')') {
-                check3 = 1;
-                newcursor = helpcursor2;
-                break;
-            }
-            newcursor++;
-        }
-        if (check3 == 0) {
-            printf("expected ')'\n");
-            return 0;
-        }
-
-        while (*newcursor != ')') { //проверка после третьего числа
-
-            if (*newcursor == ' ') {
-                newcursor++;
-            } else {
-                printf("expected '<double>'\n");
-                return 0;
-            }
-        }
-
-        if (*newcursor == ')') { // проверка после ')' до конца строки
-            newcursor++;
-            if (*newcursor == 10) {
-                return 0;
-            }
-        }
-
-        while (*newcursor != 10) {
-            if (*newcursor != ' ') {
-                printf("unexpected token\n");
-                return 0;
-            }
-            newcursor++;
-        }
-
-    } else {
+    if (strncasecmp(cursor, "circle", cursor2 - cursor) != 0) {
         printf("^\n");
         printf("Error at column 0: expected 'circle'\n");
+    } else {
+        cursor = cursor2;
+
+        if (search_brecket(cursor) == 0) //поиск '('
+        {
+            return 0;
+        }
+
+        if ((cursor = parsing_digit1(cursor, &x)) != 0) //парсинг первого числа
+        {
+            data[0] = x;
+        } else {
+            return 0;
+        }
+//         printf("x = %.1f\n", data[0]);
+
+        if ((cursor = parsing_digit2(cursor, &y)) != 0) //парсинг второго числа
+        {
+            data[1] = y;
+        } else {
+            return 0;
+        }
+//         printf("y = %.1f\n", data[1]);
+
+        if (search_comma(cursor) == 0) //поиск ','
+        {
+            return 0;
+        }
+
+        if ((cursor = parsing_comma(cursor)) == 0) //парсинг запятой
+        {
+            return 0;
+        }
+
+        if ((cursor = parsing_digit3(cursor, &radius)) != 0) //парсинг третьего числа
+        {
+            data[2] = radius;
+        } else {
+            return 0;
+        }
+//         printf("rad = %.1f\n", data[2]);
+
+        if (search_brecket2(cursor) == 0) //поиск ')'
+        {
+            return 0;
+        }
+        if (check_eof(cursor) == 0) //проверка конца строки
+        {
+            return 0;
+        }
     }
     return 0;
+}
+
+bool search_brecket(char* cursor)
+{
+    int flag = 0;
+
+    while (*cursor != 10) {
+        if (*cursor == '(') {
+            flag = 1;
+            break;
+        }
+        cursor++;
+    }
+    if (flag == 0) {
+        printf("expected '('\n");
+        return false;
+    }
+    return true;
+}
+
+char* parsing_digit1(char* cursor, double* x)
+{
+    char* end;
+    while (isdigit(*cursor) == 0) {
+        if ((*cursor == ' ') || (*cursor == '(')) {
+            cursor++;
+        } else {
+            printf("expected '<double>'\n");
+            return 0;
+        }
+    }
+
+    if (isdigit(*cursor) != 0) {
+        *x = strtod(cursor, &end);
+        cursor = end;
+    }
+    return cursor;
+}
+
+char* parsing_digit2(char* cursor, double* y)
+{
+    char* end;
+    while (isdigit(*cursor) == 0) {
+
+        if (*cursor == ' ') {
+            cursor++;
+        } else {
+            printf("expected '<double>'\n");
+            return 0;
+        }
+    }
+
+    if (isdigit(*cursor) != 0) {
+        *y = strtod(cursor, &end);
+        cursor = end;
+    }
+    return cursor;
+}
+
+bool search_comma(char* cursor)
+{
+    int flag = 0;
+
+    while (*cursor != 10) {
+        if (*cursor == ',') {
+            flag = 1;
+            break;
+        }
+        cursor++;
+    }
+    if (flag == 0) {
+        printf("expected ','\n");
+        return false;
+    }
+    return true;
+}
+
+char* parsing_comma(char* cursor)
+{
+    while (*cursor != ',') {
+
+        if (*cursor == ' ') {
+            cursor++;
+        } else {
+            printf("expected '<double>'\n");
+            return 0;
+        }
+    }
+
+    if (*cursor == ',')
+    {
+        cursor++;
+    }
+
+    if (*cursor != ' ') {
+        printf("expected ' ' after ','\n");
+        return 0;
+    } else {
+        cursor++;
+    }
+    return cursor;
+}
+
+char* parsing_digit3(char* cursor, double* radius)
+{
+    char* end;
+
+    while (isdigit(*cursor) == 0) {
+
+        if (*cursor == ' ') {
+            cursor++;
+        } else {
+            printf("expected '<double>'\n");
+            return 0;
+        }
+    }
+
+    if (isdigit(*cursor) != 0) {
+        *radius = strtod(cursor, &end);
+        cursor = end;
+    }
+    return cursor;
+}
+
+bool search_brecket2(char* cursor)
+{
+    int flag = 0;
+
+    while (*cursor != 10) {
+        if (*cursor == ')') {
+            flag = 1;
+            break;
+        }
+        cursor++;
+    }
+    if (flag == 0) {
+        printf("expected ')'\n");
+        return false;
+    }
+    return true;
+}
+
+bool check_eof(char* cursor)
+{
+    while (*cursor != ')') {
+
+        if (*cursor == ' ') {
+            cursor++;
+        } else {
+            printf("expected '<double>'\n");
+            return false;
+        }
+    }
+
+    if (*cursor == ')') {
+        cursor++;
+        if (*cursor == 10) {
+            return true;
+        }
+    }
+
+    while (*cursor != 10) {
+        if (*cursor != ' ') {
+            printf("unexpected token\n");
+            return false;
+        }
+        cursor++;
+    }
+    return true;
 }
