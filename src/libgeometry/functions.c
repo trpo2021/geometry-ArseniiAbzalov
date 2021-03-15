@@ -6,36 +6,42 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PI 3.14
-#define SIZE_ARR_STRUCT 4
+#define SIZE_ARR_OBJ 4
 
+static bool check_correct_triangle(struct figure_triangle* triangle, int j)
+{
+    if ((triangle[j].x1 != triangle[j].x4)
+        || (triangle[j].y1 != triangle[j].y4)) {
+        printf("uncorrect triangle\n");
+        return false;
+    }
+    return true;
+}
+
+static double side_length(double x1, double y1, double x2, double y2)
+{
+    return sqrt((pow((y1 - x1), 2)) + (pow((y2 - x2), 2)));
+}
 double calc_perimeter_circle(struct figure_circle* circle, int k)
 {
-    return 2 * PI * circle->radius[k];
+    return 2 * M_PI * circle[k].radius;
 }
 
 double calc_square_circle(struct figure_circle* circle, int k)
 {
-    return PI * pow(circle->radius[k], 2);
+    return M_PI * pow(circle[k].radius, 2);
 }
 
 double calc_perimeter_triangle(struct figure_triangle* triangle, int h)
 {
-    if ((triangle->x1[h] != triangle->x4[h])
-        || (triangle->y1[h] != triangle->y4[h])) {
-        printf("uncorrect triangle\n");
-        return 0;
-    }
     double a, b, c;
-    a
-            = sqrt((pow((triangle->x2[h] - triangle->x1[h]), 2))
-                   + (pow((triangle->y2[h] - triangle->y1[h]), 2)));
-    b
-            = sqrt((pow((triangle->x3[h] - triangle->x2[h]), 2))
-                   + (pow((triangle->y3[h] - triangle->y2[h]), 2)));
-    c
-            = sqrt((pow((triangle->x1[h] - triangle->x3[h]), 2))
-                   + (pow((triangle->y1[h] - triangle->y3[h]), 2)));
+
+    a = side_length(
+            triangle[h].x1, triangle[h].x2, triangle[h].y1, triangle[h].y2);
+    b = side_length(
+            triangle[h].x2, triangle[h].x3, triangle[h].y2, triangle[h].y3);
+    c = side_length(
+            triangle[h].x3, triangle[h].x1, triangle[h].y3, triangle[h].y1);
 
     return a + b + c;
 }
@@ -43,15 +49,13 @@ double calc_perimeter_triangle(struct figure_triangle* triangle, int h)
 double calc_square_triangle(struct figure_triangle* triangle, int h)
 {
     double a, b, c, p;
-    a
-            = sqrt((pow((triangle->x2[h] - triangle->x1[h]), 2))
-                   + (pow((triangle->y2[h] - triangle->y1[h]), 2)));
-    b
-            = sqrt((pow((triangle->x3[h] - triangle->x2[h]), 2))
-                   + (pow((triangle->y3[h] - triangle->y2[h]), 2)));
-    c
-            = sqrt((pow((triangle->x1[h] - triangle->x3[h]), 2))
-                   + (pow((triangle->y1[h] - triangle->y3[h]), 2)));
+
+    a = side_length(
+            triangle[h].x1, triangle[h].x2, triangle[h].y1, triangle[h].y2);
+    b = side_length(
+            triangle[h].x2, triangle[h].x3, triangle[h].y2, triangle[h].y3);
+    c = side_length(
+            triangle[h].x3, triangle[h].x1, triangle[h].y3, triangle[h].y1);
 
     p = (a + b + c) / 2;
     return sqrt((p * (p - a) * (p - b) * (p - c)));
@@ -141,13 +145,13 @@ char* parse_circle(char* cursor, int i, struct figure_circle* circle)
         return 0;
     }
     if ((cursor = parse_digit(cursor, &x1)) != 0) {
-        circle->x[i] = x1;
+        circle[i].x = x1;
     } else {
         return 0;
     }
 
     if ((cursor = parse_digit(cursor, &y1)) != 0) {
-        circle->y[i] = y1;
+        circle[i].y = y1;
     } else {
         return 0;
     }
@@ -157,7 +161,7 @@ char* parse_circle(char* cursor, int i, struct figure_circle* circle)
     }
 
     if ((cursor = parse_digit(cursor, &radius1)) != 0) {
-        circle->radius[i] = radius1;
+        circle[i].radius = radius1;
     } else {
         return 0;
     }
@@ -186,13 +190,13 @@ char* parse_triangle(char* cursor, int j, struct figure_triangle* triangle)
     }
 
     if ((cursor = parse_digit(cursor, &x1)) != 0) {
-        triangle->x1[j] = x1;
+        triangle[j].x1 = x1;
     } else {
         return 0;
     }
 
     if ((cursor = parse_digit(cursor, &y1)) != 0) {
-        triangle->y1[j] = y1;
+        triangle[j].y1 = y1;
     } else {
         return 0;
     }
@@ -202,13 +206,13 @@ char* parse_triangle(char* cursor, int j, struct figure_triangle* triangle)
     }
 
     if ((cursor = parse_digit(cursor, &x2)) != 0) {
-        triangle->x2[j] = x2;
+        triangle[j].x2 = x2;
     } else {
         return 0;
     }
 
     if ((cursor = parse_digit(cursor, &y2)) != 0) {
-        triangle->y2[j] = y2;
+        triangle[j].y2 = y2;
     } else {
         return 0;
     }
@@ -218,13 +222,13 @@ char* parse_triangle(char* cursor, int j, struct figure_triangle* triangle)
     }
 
     if ((cursor = parse_digit(cursor, &x3)) != 0) {
-        triangle->x3[j] = x3;
+        triangle[j].x3 = x3;
     } else {
         return 0;
     }
 
     if ((cursor = parse_digit(cursor, &y3)) != 0) {
-        triangle->y3[j] = y3;
+        triangle[j].y3 = y3;
     } else {
         return 0;
     }
@@ -234,14 +238,18 @@ char* parse_triangle(char* cursor, int j, struct figure_triangle* triangle)
     }
 
     if ((cursor = parse_digit(cursor, &x4)) != 0) {
-        triangle->x4[j] = x4;
+        triangle[j].x4 = x4;
     } else {
         return 0;
     }
 
     if ((cursor = parse_digit(cursor, &y4)) != 0) {
-        triangle->y4[j] = y4;
+        triangle[j].y4 = y4;
     } else {
+        return 0;
+    }
+
+    if ((check_correct_triangle(triangle, j)) == 0) {
         return 0;
     }
 
