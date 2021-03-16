@@ -50,8 +50,8 @@ int main()
                circle[k].x,
                circle[k].y,
                circle[k].radius);
-        printf("perimeter = %.1f\n", calc_perimeter_circle(circle, k));
-        printf("square = %.1f\n\n", calc_square_circle(circle, k));
+        printf("perimeter = %.1f\n", calc_perimeter_circle(circle[k]));
+        printf("square = %.1f\n\n", calc_square_circle(circle[k]));
     }
     for (int h = 0; h < j; h++) {
         printf("triangle ((%.1f %.1f, %.1f %.1f, %.1f %.1f, %.1f %.1f))\n",
@@ -63,10 +63,8 @@ int main()
                triangle[h].y3,
                triangle[h].x4,
                triangle[h].y4);
-        if (calc_perimeter_triangle(triangle, h) != 0) {
-            printf("perimeter = %.1f\n", calc_perimeter_triangle(triangle, h));
-            printf("square = %.1f\n\n", calc_square_triangle(triangle, h));
-        }
+        printf("perimeter = %.1f\n", calc_perimeter_triangle(triangle[h]));
+        printf("square = %.1f\n\n", calc_square_triangle(triangle[h]));
     }
 
     return 0;

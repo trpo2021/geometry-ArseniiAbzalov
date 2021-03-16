@@ -8,10 +8,9 @@
 
 #define SIZE_ARR_OBJ 4
 
-static bool check_correct_triangle(struct figure_triangle* triangle, int j)
+static bool check_correct_triangle(struct figure_triangle triangle)
 {
-    if ((triangle[j].x1 != triangle[j].x4)
-        || (triangle[j].y1 != triangle[j].y4)) {
+    if ((triangle.x1 != triangle.x4) || (triangle.y1 != triangle.y4)) {
         printf("uncorrect triangle\n");
         return false;
     }
@@ -22,40 +21,34 @@ static double side_length(double x1, double y1, double x2, double y2)
 {
     return sqrt((pow((y1 - x1), 2)) + (pow((y2 - x2), 2)));
 }
-double calc_perimeter_circle(struct figure_circle* circle, int k)
+double calc_perimeter_circle(struct figure_circle circle)
 {
-    return 2 * M_PI * circle[k].radius;
+    return 2 * M_PI * circle.radius;
 }
 
-double calc_square_circle(struct figure_circle* circle, int k)
+double calc_square_circle(struct figure_circle circle)
 {
-    return M_PI * pow(circle[k].radius, 2);
+    return M_PI * pow(circle.radius, 2);
 }
 
-double calc_perimeter_triangle(struct figure_triangle* triangle, int h)
+double calc_perimeter_triangle(struct figure_triangle triangle)
 {
     double a, b, c;
 
-    a = side_length(
-            triangle[h].x1, triangle[h].x2, triangle[h].y1, triangle[h].y2);
-    b = side_length(
-            triangle[h].x2, triangle[h].x3, triangle[h].y2, triangle[h].y3);
-    c = side_length(
-            triangle[h].x3, triangle[h].x1, triangle[h].y3, triangle[h].y1);
+    a = side_length(triangle.x1, triangle.x2, triangle.y1, triangle.y2);
+    b = side_length(triangle.x2, triangle.x3, triangle.y2, triangle.y3);
+    c = side_length(triangle.x3, triangle.x1, triangle.y3, triangle.y1);
 
     return a + b + c;
 }
 
-double calc_square_triangle(struct figure_triangle* triangle, int h)
+double calc_square_triangle(struct figure_triangle triangle)
 {
     double a, b, c, p;
 
-    a = side_length(
-            triangle[h].x1, triangle[h].x2, triangle[h].y1, triangle[h].y2);
-    b = side_length(
-            triangle[h].x2, triangle[h].x3, triangle[h].y2, triangle[h].y3);
-    c = side_length(
-            triangle[h].x3, triangle[h].x1, triangle[h].y3, triangle[h].y1);
+    a = side_length(triangle.x1, triangle.x2, triangle.y1, triangle.y2);
+    b = side_length(triangle.x2, triangle.x3, triangle.y2, triangle.y3);
+    c = side_length(triangle.x3, triangle.x1, triangle.y3, triangle.y1);
 
     p = (a + b + c) / 2;
     return sqrt((p * (p - a) * (p - b) * (p - c)));
@@ -249,7 +242,7 @@ char* parse_triangle(char* cursor, int j, struct figure_triangle* triangle)
         return 0;
     }
 
-    if ((check_correct_triangle(triangle, j)) == 0) {
+    if ((check_correct_triangle(triangle[j])) == 0) {
         return 0;
     }
 

@@ -1,7 +1,6 @@
 #pragma once
 #define SIZE_ARR_OBJ 4
 #define SIZE_STR 64
-//#define M_PI 3.14159265358979323846
 
 struct figure_circle {
     double x;
@@ -20,9 +19,9 @@ struct figure_triangle {
     double y4;
 };
 
-double calc_square_circle(struct figure_circle* circle, int k);
-double calc_perimeter_circle(struct figure_circle* circle, int k);
-double calc_perimeter_triangle(struct figure_triangle* triangle, int h);
-double calc_square_triangle(struct figure_triangle* triangle, int h);
-char* parse_circle(char* cursor,int i, struct figure_circle* circle);
+double calc_square_circle(struct figure_circle circle);
+double calc_perimeter_circle(struct figure_circle circle);
+double calc_perimeter_triangle(struct figure_triangle triangle);
+double calc_square_triangle(struct figure_triangle triangle);
+char* parse_circle(char* cursor, int i, struct figure_circle* circle);
 char* parse_triangle(char* cursor, int j, struct figure_triangle* triangle);
