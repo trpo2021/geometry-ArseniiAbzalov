@@ -51,7 +51,14 @@ int main()
     printf("\n");
 
     int collisions[num_circle][num_circle];
-    collision(circle, num_circle, collisions);
+
+    for (int i = 0; i < num_circle; i++) {
+        for (int j = 0; j < num_circle; j++) {
+            if (i != j)
+                collisions[i][j] = collision(circle[i], circle[j], num_circle);
+        }
+    }
+    //  collision(circle, num_circle, collisions);
 
     for (int i = 0; i < num_circle; i++) {
         printf("%d. circle (%.1f %.1f, %.1f)\n",
