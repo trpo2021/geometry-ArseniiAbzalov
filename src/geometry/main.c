@@ -5,66 +5,72 @@
 
 int main()
 {
-    struct figure_circle circle[SIZE_ARR_OBJ];
-    struct figure_triangle triangle[SIZE_ARR_OBJ];
-
+    figure_circle circle[SIZE_ARR_OBJ];
     char str[SIZE_STR];
     char* startcursor = str;
     char* cursor = str;
-    int i = 0, j = 0;
+    int num_circle = 0;
+    int Error = 0;
 
     while (fgets(str, SIZE_STR, stdin)) {
-        startcursor = str;
-        cursor = str;
-
-        while (*startcursor == ' ') {
-            startcursor++;
-            cursor++;
-        }
-        if (isalpha(*startcursor) != 0) {
-            while (isalpha(*cursor) != 0) {
-                cursor++;
-            }
-        }
-
-        if (strncasecmp(startcursor, "circle", cursor - startcursor) == 0) {
-            if (parse_circle(cursor, i, circle) != 0) {
-                i++;
-            }
-        } else {
-            if (strncasecmp(startcursor, "triangle", cursor - startcursor)
-                == 0) {
-                if (parse_triangle(cursor, j, triangle) != 0) {
-                    j++;
-                }
-            } else {
-                printf("^\n");
-                printf("Error at column 0: expected 'circle' or 'triangle'\n");
+        Error = parse_circle(str, startcursor, cursor, circle, num_circle);
+        if (Error == 0)
+            num_circle++;
+        else {
+            switch (Error) {
+            case -1:
+                printf("Error at column 0: expected 'circle'\n");
+                break;
+            case -2:
+                printf("expected '('\n");
+                break;
+            case -3:
+                printf("expected 'x' c type 'double'\n");
+                break;
+            case -4:
+                printf("expected 'y' c type 'double'\n");
+                break;
+            case -5:
+                printf("expected ','\n");
+                break;
+            case -6:
+                printf("expected 'radius' c type 'double'\n");
+                break;
+            case -7:
+                printf("uncorrect radius\n");
+                break;
+            case -8:
+                printf("expected ')'\n");
+                break;
+            case -9:
+                printf("unexpected token\n");
+                break;
             }
         }
     }
     printf("\n");
 
-    for (int k = 0; k < i; k++) {
-        printf("circle (%.1f %.1f, %.1f)\n",
-               circle[k].x,
-               circle[k].y,
-               circle[k].radius);
-        printf("perimeter = %.1f\n", calc_perimeter_circle(circle[k]));
-        printf("square = %.1f\n\n", calc_square_circle(circle[k]));
-    }
-    for (int h = 0; h < j; h++) {
-        printf("triangle ((%.1f %.1f, %.1f %.1f, %.1f %.1f, %.1f %.1f))\n",
-               triangle[h].x1,
-               triangle[h].y1,
-               triangle[h].x2,
-               triangle[h].y2,
-               triangle[h].x3,
-               triangle[h].y3,
-               triangle[h].x4,
-               triangle[h].y4);
-        printf("perimeter = %.1f\n", calc_perimeter_triangle(triangle[h]));
-        printf("square = %.1f\n\n", calc_square_triangle(triangle[h]));
+    int collisions[num_circle][num_circle];
+    collision(circle, num_circle, collisions);
+
+    for (int i = 0; i < num_circle; i++) {
+        printf("%d. circle (%.1f %.1f, %.1f)\n",
+               i + 1,
+               circle[i].x,
+               circle[i].y,
+               circle[i].radius);
+        printf("    perimeter = %.1f\n",
+               circle[i].perimeter = calc_perimeter_circle(circle[i]));
+        printf("    area = %.1f\n",
+               circle[i].area = calc_area_circle(circle[i]));
+        printf("    intersects:\n ");
+
+        for (int j = 0; j < num_circle; j++) {
+            if (collisions[i][j] == 1) {
+                printf("\t %d. circle\n", j + 1);
+            }
+        }
+        printf("\n");
     }
 
     return 0;
