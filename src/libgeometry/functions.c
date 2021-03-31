@@ -13,31 +13,22 @@ double side_length(double x1, double y1, double x2, double y2)
     return sqrt((pow((y1 - x1), 2)) + (pow((y2 - x2), 2)));
 }
 
-void collision(
-        figure_circle* circle,
-        int num_circle,
-        int collisions[num_circle][num_circle])
+bool collision(figure_circle circle_i, figure_circle circle_j, int num_circle)
 {
     double length_between_points, sum_of_radius;
 
     for (int i = 0; i < num_circle; i++) {
         for (int j = 0; j < num_circle; j++) {
-            collisions[i][j] = 0;
-        }
-    }
-
-    for (int i = 0; i < num_circle; i++) {
-        for (int j = 0; j < num_circle; j++) {
             if (i != j) {
-                sum_of_radius = fabs((circle[i].radius + circle[j].radius));
+                sum_of_radius = fabs((circle_i.radius + circle_j.radius));
                 length_between_points = side_length(
-                        circle[j].x, circle[i].x, circle[j].y, circle[i].y);
-                if (length_between_points <= sum_of_radius) {
-                    collisions[i][j] = 1;
-                }
+                        circle_j.x, circle_i.x, circle_j.y, circle_i.y);
+                if (length_between_points <= sum_of_radius)
+                    return true;
             }
         }
     }
+    return false;
 }
 
 double calc_perimeter_circle(figure_circle circle)
