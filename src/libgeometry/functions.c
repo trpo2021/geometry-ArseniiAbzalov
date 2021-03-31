@@ -16,13 +16,7 @@ double side_length(double x1, double y1, double x2, double y2)
 bool collision(figure_circle circle_i, figure_circle circle_j, int num_circle)
 {
     double length_between_points, sum_of_radius;
-    /*
-        for (int i = 0; i < num_circle; i++) {
-            for (int j = 0; j < num_circle; j++) {
-                collisions[i][j] = 0;
-            }
-        }
-    */
+
     for (int i = 0; i < num_circle; i++) {
         for (int j = 0; j < num_circle; j++) {
             if (i != j) {
