@@ -63,25 +63,6 @@ static char* parse_bracket(char* cursor, char sign)
         return cursor;
     }
     return cursor;
-
-    /*
-      while (*cursor != '\n') {
-          if (*cursor == sign) {
-              cursor++;
-              return cursor;
-          }
-          if (*cursor == ' ') {
-              cursor++;
-          } else {
-              return NULL;
-          }
-      }
-
-      if (*cursor == '\n') {
-          return NULL;
-      }
-      return NULL;
-      */
 }
 
 static char* parse_digit(char* cursor, double* num)
